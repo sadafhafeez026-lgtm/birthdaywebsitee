@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Birthday, My Love</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+    <style>
+        /* 
+         * 2025 AESTHETIC: Romantic, Expressive, Deep
+         */
+        :root {
+            --bg-color: #05040a;
+            --glass-bg: rgba(25, 20, 35, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --primary: #ffb7c5; /* Soft Rose */
+            --accent: #ff4d80; /* Deep Pink */
+            --text-main: #ffffff;
+            --text-muted: #e0e0e0;
+            --font-display: 'Playfair Display', serif;
+            --font-body: 'Outfit', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+
+        /* --- BACKGROUND LAYERS --- */
+        #canvas-bg {
+            position: fixed; inset: 0; z-index: -3;
+            filter: blur(80px); opacity: 0.6;
+        }
+        
+        .grain-overlay {
+            position: fixed; inset: 0; z-index: -1;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0ibm9uZSIvPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDQiIGZpbHRlcj0idXJsKCNub2lzZSkiLz48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNiIgb51bW9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48L3N2Zz4=');
+            opacity: 0.3; pointer-events: none;
+        }
+
+        /* --- MUSIC PLAYER TOGGLE --- */
+        #music-toggle {
+            position: fixed; top: 20px; right: 20px;
+            z-index: 1000;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white; font-size: 0.8rem; cursor: pointer;
+            transition: 0.3s;
+        }
+
+        /* --- MAIN CONTAINER --- */
+        .app-container {
+            width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            position: relative; z-index: 10;
+        }
+
+        .scene {
+            position: absolute;
+            width: 90%; max-width: 600px;
+            opacity: 0; pointer-events: none;
+            transform: translateY(30px) scale(0.98);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+        }
+        .scene.active { opacity: 1; pointer-events: all; transform: translateY(0) scale(1); }
+        .scene.exiting { opacity: 0; transform: translateY(-30px) scale(1.02); filter: blur(10px); }
+
+        /* --- CARDS & TYPOGRAPHY --- */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 2.2rem; width: 100%;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+            max-height: 90vh;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: 2.8rem; line-height: 1.1;
+            background: linear-gradient(to right, #fff, #ffd1dc);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(255, 183, 197, 0.4);
+            animation: heartbeat 3s infinite ease-in-out;
+        }
+        
+        @keyframes heartbeat { 0%,100%{transform:scale(1);} 50%{transform:scale(1.02);} }
+
+        h2 { font-family: var(--font-display); font-size: 2rem; margin-bottom: 1rem; color: #fff; font-weight: 500; }
+        p { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem; }
+
+        /* --- BUTTONS --- */
+        .btn-romantic {
+            background: linear-gradient(135deg, #ff9a9e 0%, #ff6b88 100%);
+            border: none; padding: 1rem 2.5rem;
+            border-radius: 50px; color: #fff;
+            font-family: var(--font-body); font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; transition: 0.4s;
+            box-shadow: 0 10px 30px rgba(255, 107, 136, 0.4);
+            margin-top: auto; 
+            font-size: 0.9rem;
+        }
+        .btn-romantic:hover { transform: scale(1.05); box-shadow: 0 15px 40px rgba(255, 107, 136, 0.6); }
+
+        /* --- PINTEREST GRID --- */
+        .pinterest-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+            margin-bottom: 1.5rem; width: 100%;
+        }
+        .pin-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px; overflow: hidden;
+            position: relative; transition: transform 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .pin-item:nth-child(1) { grid-row: span 2; height: 280px; } 
+        .pin-item:nth-child(2) { height: 134px; }
+        .pin-item:nth-child(3) { height: 134px; }
+        .pin-item img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: 0.5s; opacity: 0.9;
+        }
+        .pin-item:hover img { transform: scale(1.1); opacity: 1; }
+
+        /* --- QUIZ STYLES --- */
+        .quiz-option {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--glass-border);
+            padding: 1.1rem; margin: 8px 0;
+            border-radius: 16px; cursor: pointer;
+            transition: 0.3s; text-align: left;
+            display: flex; justify-content: space-between; align-items: center;
+            width: 100%;
+        }
+        .quiz-option:hover { background: rgba(255,255,255,0.15); border-color: var(--primary); }
+        .quiz-option.correct { background: rgba(255, 183, 197, 0.25); border-color: var(--primary); }
+        .quiz-option.wrong { background: rgba(255, 50, 50, 0.15); border-color: #ff3333; animation: shake 0.4s; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+
+        /* --- STORY SCROLL --- */
+        .story-wrapper {
+            position: relative; 
+            height: 350px; 
+            width: 100%;
+            margin-bottom: 1rem;
+            overflow: hidden; 
+            border-top: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        
+        .story-content {
+            position: absolute;
+            top: 100%; 
+            left: 0;
+            width: 100%;
+            padding: 20px 10px;
+            font-family: var(--font-display); 
+            font-size: 1.2rem;
+            line-height: 2.1; 
+            color: #ffffff;
+            white-space: pre-line;
+            text-align: left;
+            opacity: 0.95;
+        }
+        
+        /* FASTER ANIMATION: 75 seconds */
+        .animate-scroll {
+            animation: scrollStory 75s linear forwards; 
+        }
+
+        @keyframes scrollStory {
+            0% { top: 100%; }
+            100% { top: -280%; } 
+        }
+        
+        .story-controls {
+            display: flex; gap: 10px; justify-content: center; margin-bottom: 15px;
+        }
+        .control-btn {
+            background: rgba(255,255,255,0.15); border: none;
+            color: white; padding: 8px 14px; border-radius: 12px;
+            cursor: pointer; font-size: 0.85rem; transition: 0.2s;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .control-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+
+        /* --- INPUTS --- */
+        .input-box { margin-bottom: 1.2rem; text-align: left; width: 100%; }
+        .input-box label { display: block; margin-bottom: 0.4rem; color: var(--primary); font-size: 0.9rem; font-weight: 500; }
+        textarea {
+            width: 100%; background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border); border-radius: 12px;
+            color: white; padding: 12px; font-family: var(--font-body);
+            resize: none; outline: none; transition: 0.3s;
+        }
+        textarea:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
+
+        /* --- CANDLE --- */
+        .candle-box { position: relative; height: 160px; width:100%; display: flex; justify-content: center; align-items: flex-end; margin-bottom: 2rem; }
+        .stick { width: 14px; height: 90px; background: linear-gradient(to right, #e0e0e0, #fff); border-radius: 4px; }
+        .flame {
+            position: absolute; bottom: 95px; width: 22px; height: 36px;
+            background: #ffcc00; border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 20px #ffcc00, 0 0 40px #ff3300;
+            animation: flicker 0.1s infinite alternate;
+            cursor: pointer; z-index: 5;
+        }
+        @keyframes flicker { from {transform: scale(1);} to {transform: scale(1.1) skewX(2deg);} }
+        .smoke {
+            position: absolute; bottom: 95px; width: 10px; height: 45px;
+            background: rgba(255,255,255,0.4); filter: blur(5px);
+            opacity: 0; border-radius: 50%; pointer-events: none;
+        }
+
+        /* --- PARTICLES --- */
+        .floating-heart {
+            position: absolute; color: var(--accent); font-size: 1.2rem;
+            animation: floatUp 5s linear forwards; opacity: 0;
+            z-index: 999;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Audio Player -->
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-piano-111394.mp3" type="audio/mpeg">
+    </audio>
+    <button id="music-toggle" onclick="toggleMusic()">🎵 Music: Off</button>
+
+    <!-- Backgrounds -->
+    <div class="grain-overlay"></div>
+    <canvas id="canvas-bg"></canvas>
+
+    <div class="app-container">
+
+        <!-- SCENE 1: INTRO -->
+        <div class="scene active" id="scene-1">
+            <div class="glass-card">
+                <p style="text-transform:uppercase; letter-spacing:3px; font-size:0.8rem; color:var(--primary); margin-bottom:15px;">For My Soulmate 🌹</p>
+                <h1>Happy Birthday<br><span style="font-size:0.5em; font-style:italic; font-weight:400; color:white;">My Love of Life 🎂</span></h1>
+                <p>I built a little world just for us inside this screen.<br>Are you ready for your gift? ✨</p>
+                <button class="btn-romantic" onclick="nextScene(2)">Enter ❤️</button>
+            </div>
+        </div>
+
+        <!-- SCENE 2: PINTEREST GALLERY -->
+        <div class="scene" id="scene-2">
+            <h2>The few moments we are sharing 📸</h2>
+            <div class="pinterest-grid">
+                <!-- REPLACE THESE IMAGES -->
+                <div class="pin-item"><img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=600&auto=format&fit=crop" alt="Us 1"></div>
+                <div class="pin-item"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop" alt="Us 2"></div>
+                <div class="pin-item"><img src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=600&auto=format&fit=crop" alt="Us 3"></div>
+            </div>
+            <p>Every picture tells a story of us. 💖</p>
+            <button class="btn-romantic" onclick="nextScene(3)">Unlock My Heart 🔐</button>
+        </div>
+
+        <!-- SCENE 3: THE QUIZ -->
+        <div class="scene" id="scene-3">
+            <div class="glass-card">
+                <h2>Do you know me? 🤔</h2>
+                <p id="quiz-progress" style="color:var(--primary); font-size:0.85rem; letter-spacing:1px; margin-bottom:1rem;">QUESTION 1/5</p>
+                <div id="quiz-container" style="width:100%">
+                    <!-- Questions injected via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SCENE 4: FANTASY STORY -->
+        <div class="scene" id="scene-4">
+            <div class="glass-card">
+                <h2 style="font-size:1.8rem; margin-bottom: 0.5rem;">If distance didn't exist... 🌙</h2>
+                
+                <div class="story-wrapper">
+                    <div class="story-content" id="story-text">
+How your birthday would start
+if distance didn’t exist…
+and if I got to love you in person the way I always imagine.
+
+I would have been waiting for this day whole year because your birthday isn't just your special day, it's also my day to celebrate.
+The day would start exactly at 12:00 a.m.
+
+We'd be sitting on our couch or bed done with the dinner and of course tired from a hectic day, I'd ask you to watch a movie with me purposely so that we'd share the moment I had been waiting for.
+
+I’d be sitting beside you, pretending not to stare at the clock, pretending not to look at your face every five seconds… waiting for midnight.
+You’d notice, of course,
+but you’d act like you didn’t.
+
+Then the moment the clock hits 12:00,
+I’d lean in before you even say a word
+and kiss you 
+A soft and gentle the kind of kiss that claims that
+“You’re mine.
+And I wanted to be the first one to wish you.”
+
+You’d smile against my lips,
+pull me a little closer just like you always do whenever we're together,
+and I’d whisper against your neck,
+“Happy birthday, love of my life.”
+
+You’d wrap your arms around me the way you do without thinking,
+warm, slow, protective.
+I’d feel your heartbeat
+and for a moment everything would go quiet
+just me breathing you.
+
+We’d stay like that for a while,
+you holding me,
+me touching your hair,
+both of us just the two of us,
+Without anything to worry about ,
+Forgetting the world.
+
+Then you’d look at me with that look
+the one that makes me high, 
+And lost in you, I'd not be me anymore 
+and you’d say,
+“I love this birthday gift.”
+
+I’d laugh because you always say things like that, 
+You’d take my hand, lace your fingers with mine,
+and we’d just lie there talking in low voices.
+
+You’d tell me little things 
+how you feel, what you want,
+the things you never say during the day.
+And I’d listen the way I always do
+because nothing feels more right than hearing your heart when you are emotionally open to me.
+
+At some point you’d pull me onto your chest
+because you know that’s where I feel safest, 
+And that no matter how close we are, it feels less close.
+I’d trace circles on your skin,
+you’d run your fingers through my hair,
+and that silence between us would be full of words
+it would feel like home.
+
+We’d fall asleep like that,
+your arms around me,
+my breath against your shoulder,
+your birthday beginning with the kind of closeness
+we’ve been waiting for too long.
+
+And in the morning…
+I’d wake up before you
+while you’re still holding me like you forgot to let go, 
+Without waking you up, I'd just 
+look at you, kiss you, admire you and thank God for making us for each other.
+
+That’s how your birthday would start
+if distance didn’t exist…
+and if I got to love you in person the way I always imagine.
+                    </div>
+                </div>
+
+                <!-- CONTROLS FOR READING -->
+                <div class="story-controls">
+                    <button class="control-btn" onclick="storyAction('pause')">⏸ Pause</button>
+                    <button class="control-btn" onclick="storyAction('play')">▶ Play</button>
+                    <button class="control-btn" onclick="storyAction('restart')">↺ Restart</button>
+                </div>
+
+                <button class="btn-romantic" onclick="nextScene(5)">My Promise 🤝</button>
+            </div>
+        </div>
+
+        <!-- SCENE 5: PROMISE -->
+        <div class="scene" id="scene-5">
+            <div class="glass-card">
+                <h2>I Promise You 💍</h2>
+                <div style="font-size:3rem; margin:1rem 0;">❤️</div>
+                <p style="font-style:italic; color:white; font-size:1.2rem;">
+                    "One day, this won’t be imagination.<br>
+                    One day, this midnight will be real."
+                </p>
+                <p>I’m choosing you, not just tonight,<br>but in all the tomorrows I dream of. ✨</p>
+                <button class="btn-romantic" onclick="nextScene(6)">Make a Wish 🎂</button>
+            </div>
+        </div>
+
+        <!-- SCENE 6: CANDLE -->
+        <div class="scene" id="scene-6">
+            <h1>Make a Wish ✨</h1>
+            <div class="candle-box">
+                <div class="stick"></div>
+                <div class="flame" id="flame" onclick="blowCandle()"></div>
+                <div class="smoke" id="smoke"></div>
+            </div>
+            <p id="candle-text">Tap the flame to blow it out... 🕯️</p>
+        </div>
+
+        <!-- SCENE 7: HONEST TRUTH (5 QUESTIONS) -->
+        <div class="scene" id="scene-7">
+            <div class="glass-card" style="max-height:85vh; overflow-y:auto; justify-content: flex-start;">
+                <h2 style="color:var(--primary); margin-top: 20px;">The Honest Truth 💌</h2>
+                <p>Tell me everything. No secrets.</p>
+
+                <div class="input-box">
+                    <label>1. What is the one thing you crave most from us this year? 🥺</label>
+                    <textarea id="ans1" rows="2"></textarea>
+                </div>
+                <div class="input-box">
+                    <label>2. If you could teleport to me right now, what's the first thing you'd do? 🚀</label>
+                    <textarea id="ans2" rows="2"></textarea>
+                </div>
+                <div class="input-box">
+                    <label>3. Tell me a secret you haven't told me yet. 🤫</label>
+                    <textarea id="ans3" rows="2"></textarea>
+                </div>
+                <div class="input-box">
+                    <label>4. What date was our first kiss and how did you feel? 💋</label>
+                    <textarea id="ans4" rows="2"></textarea>
+                </div>
+                <div class="input-box">
+                    <label>5. When do you feel closest to me despite this distance? 🌍</label>
+                    <textarea id="ans5" rows="2"></textarea>
+                </div>
+
+                <button class="btn-romantic" style="margin-bottom: 20px;" onclick="sendAnswers()">Send to Me 💌</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. QUIZ DATA ---
+        const questions = [
+            {
+                q: "What do I crave most from you? 🥺",
+                options: ["A warm hug 🤗", "A kiss 💋", "Your touch ✋"],
+                correct: 0 
+            },
+            {
+                q: "When we met for the first time I wore which color? 👗",
+                options: ["Blue 💙", "Black 🖤", "Grey 🩶"],
+                correct: 0 
+            },
+            {
+                q: "What did you ask before our first kiss? 🫣",
+                options: ["Mjhy tmhy kiss krna ha", "Ek kissi ly lu? 🙈", "Sadaf meri taraf dekho"],
+                correct: 1 
+            },
+            {
+                q: "What is this year about? 🔗",
+                options: ["Our connection ✨", "Our conversations 💬", "Our distance 🗺️"],
+                correct: 0 
+            },
+            {
+                q: "Why did I make this? 🎁",
+                options: ["For fun", "Because I love you ❤️", "Because you matter 🌟"],
+                correct: 2 
+            }
+        ];
+
+        // --- 2. LOGIC & NAVIGATION ---
+        let currentQ = 0;
+
+        function nextScene(n) {
+            const active = document.querySelector('.scene.active');
+            const next = document.getElementById('scene-' + n);
+            
+            if(active) {
+                active.classList.remove('active');
+                active.classList.add('exiting');
+                setTimeout(() => active.classList.remove('exiting'), 800);
+            }
+            if(next) {
+                setTimeout(() => {
+                    next.classList.add('active');
+                    // Story Animation Logic
+                    if(n === 4) {
+                        const text = document.getElementById('story-text');
+                        text.classList.remove('animate-scroll');
+                        void text.offsetWidth; // trigger reflow
+                        text.classList.add('animate-scroll');
+                    }
+                }, 200);
+            }
+            if(n === 3) loadQuiz();
+        }
+
+        // --- 3. QUIZ FUNCTIONS ---
+        function loadQuiz() {
+            const container = document.getElementById('quiz-container');
+            const progress = document.getElementById('quiz-progress');
+            const data = questions[currentQ];
+            
+            progress.innerText = `QUESTION ${currentQ + 1} / 5`;
+            let html = `<h3 style="margin-bottom:20px; font-weight:400;">${data.q}</h3>`;
+            
+            data.options.forEach((opt, index) => {
+                html += `<div class="quiz-option" onclick="checkAnswer(this, ${index})">
+                            <span>${opt}</span>
+                         </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function checkAnswer(el, index) {
+            const correctIndex = questions[currentQ].correct;
+            if(index === correctIndex) {
+                el.classList.add('correct');
+                spawnHearts();
+                setTimeout(() => {
+                    currentQ++;
+                    if(currentQ < questions.length) loadQuiz();
+                    else nextScene(4);
+                }, 800);
+            } else {
+                el.classList.add('wrong');
+                setTimeout(() => el.classList.remove('wrong'), 500);
+            }
+        }
+
+        // --- 4. STORY CONTROLS ---
+        function storyAction(action) {
+            const text = document.getElementById('story-text');
+            if(action === 'pause') text.style.animationPlayState = 'paused';
+            if(action === 'play') text.style.animationPlayState = 'running';
+            if(action === 'restart') {
+                text.classList.remove('animate-scroll');
+                void text.offsetWidth; 
+                text.classList.add('animate-scroll');
+            }
+        }
+
+        // --- 5. CANDLE & EFFECTS ---
+        function blowCandle() {
+            document.getElementById('flame').style.display = 'none';
+            const smoke = document.getElementById('smoke');
+            smoke.style.opacity = 1;
+            smoke.style.transform = 'translateY(-40px) scale(2)';
+            smoke.style.transition = '2s';
+            
+            document.getElementById('candle-text').innerHTML = "Happy Birthday, Baby.<br>I love you forever. ❤️";
+            spawnHearts(50);
+            
+            setTimeout(() => nextScene(7), 3500);
+        }
+
+        function spawnHearts(n = 10) {
+            for(let i=0; i<n; i++) {
+                const h = document.createElement('div');
+                h.classList.add('floating-heart');
+                h.innerText = ['❤️', '✨', '💖', '🥰'][Math.floor(Math.random()*4)];
+                h.style.left = Math.random()*100 + 'vw';
+                h.style.top = Math.random()*100 + 'vh';
+                h.style.fontSize = Math.random()*20+15+'px';
+                h.style.animationDuration = Math.random()*3+2+'s';
+                document.body.appendChild(h);
+                setTimeout(() => h.remove(), 5000);
+            }
+        }
+
+        // --- 6. MUSIC PLAYER ---
+        const audio = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-toggle');
+        function toggleMusic() {
+            if(audio.paused) {
+                audio.play();
+                musicBtn.innerText = "🎵 Music: On";
+                musicBtn.style.background = "rgba(255, 183, 197, 0.4)";
+            } else {
+                audio.pause();
+                musicBtn.innerText = "🎵 Music: Off";
+                musicBtn.style.background = "rgba(255,255,255,0.1)";
+            }
+        }
+
+        // --- 7. BACKGROUND ANIMATION ---
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let w, h, particles = [];
+        
+        function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+
+        class P {
+            constructor() {
+                this.x = Math.random()*w; this.y = Math.random()*h;
+                this.vx = (Math.random()-.5)*0.5; this.vy = (Math.random()-.5)*0.5;
+                this.s = Math.random()*60+20;
+                this.c = Math.random() > 0.5 ? '#ffb7c5' : '#5a0020';
+            }
+            u() {
+                this.x+=this.vx; this.y+=this.vy;
+                if(this.x<0||this.x>w) this.vx*=-1; if(this.y<0||this.y>h) this.vy*=-1;
+            }
+            d() {
+                const g = ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,this.s);
+                g.addColorStop(0,this.c); g.addColorStop(1,'transparent');
+                ctx.fillStyle=g; ctx.beginPath(); ctx.arc(this.x,this.y,this.s,0,Math.PI*2); ctx.fill();
+            }
+        }
+        for(let i=0; i<15; i++) particles.push(new P());
+        function animate() {
+            ctx.clearRect(0,0,w,h); ctx.globalCompositeOperation='screen';
+            particles.forEach(p=>{p.u();p.d()}); requestAnimationFrame(animate);
+        }
+        animate();
+
+        // --- 8. SEND ANSWERS ---
+        function sendAnswers() {
+            const answers = [
+                document.getElementById('ans1').value,
+                document.getElementById('ans2').value,
+                document.getElementById('ans3').value,
+                document.getElementById('ans4').value,
+                document.getElementById('ans5').value
+            ];
+            
+            if(answers.some(a => !a)) { alert("Please answer everything... 🥺"); return; }
+            
+            const msg = `Baby, here are my honest answers:\n\n1. Crave: ${answers[0]}\n2. Teleport: ${answers[1]}\n3. Secret: ${answers[2]}\n4. First Kiss: ${answers[3]}\n5. Closeness: ${answers[4]}`;
+            
+            // *** ENTER YOUR PHONE NUMBER HERE (e.g. 923001234567) ***
+            const phone = "000000000000"; 
+            
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+    </script>
+</body>
+</html>
